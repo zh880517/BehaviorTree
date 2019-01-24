@@ -1,13 +1,10 @@
 #pragma once
 #include "TaskStatus.h"
-
+#include <vector>
+#include <map>
 class Node;
-class Action;
-class Conditional;
-class Composite;
-class ConditionalEvaluator;
-class Decorator;
 class ParentNode;
+
 class BehaviorTree
 {
 public:
@@ -16,10 +13,16 @@ public:
 
 public:
 	TaskStatus GetNodeRunStatus(int nodeId);
+	void Update();
 protected:
+	TaskStatus OnUpdate();
+	int GetNodeParentId(int nodeId);
+	Node* GetNode(int nodeId);
+	ParentNode* GetParent(int nodeId);
 	void SetRuningNode(int nodeId);
 	void OnNodeStatusChange(Node* node, TaskStatus status);
 	TaskStatus RunNode(Node* node);
+	TaskStatus OnNodeComplete(Node* node, TaskStatus status);
 	TaskStatus RunChildNode(Node* node);
 	TaskStatus RunParentNode(ParentNode* node);
 	/*
@@ -29,6 +32,13 @@ protected:
 	*/
 
 private:
-	int RunningNode = 0;
+	std::vector<TaskStatus> NodeRunStatus;
+	std::vector<int> NodeParentId;
+	std::vector<Node*> Nodes;
+	std::map<int, int> NodeInParentIndex;
+	Node* Root = nullptr;
+	int RunningNode = -1;
+	bool ReStartWhenComplete = false;
+	bool CanUpdate = false;
 };
 

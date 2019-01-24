@@ -24,6 +24,9 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="BehaviorTree\Blackboard.cpp">
+      <Filter>BehaviorTree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BehaviorTree\AbortType.h">
@@ -57,6 +60,12 @@
       <Filter>BehaviorTree</Filter>
     </ClInclude>
     <ClInclude Include="BehaviorTree\TaskStatus.h">
+      <Filter>BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviorTree\Blackboard.h">
+      <Filter>BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="BehaviorTree\SharedVariable.h">
       <Filter>BehaviorTree</Filter>
     </ClInclude>
   </ItemGroup>

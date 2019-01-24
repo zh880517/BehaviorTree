@@ -149,12 +149,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BehaviorTree\BehaviorTree.cpp" />
+    <ClCompile Include="BehaviorTree\Blackboard.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BehaviorTree\AbortType.h" />
     <ClInclude Include="BehaviorTree\Action.h" />
     <ClInclude Include="BehaviorTree\BehaviorTree.h" />
+    <ClInclude Include="BehaviorTree\Blackboard.h" />
     <ClInclude Include="BehaviorTree\Composite.h" />
     <ClInclude Include="BehaviorTree\Conditional.h" />
     <ClInclude Include="BehaviorTree\ConditionalEvaluator.h" />
@@ -162,6 +164,7 @@
     <ClInclude Include="BehaviorTree\Node.h" />
     <ClInclude Include="BehaviorTree\NodeType.h" />
     <ClInclude Include="BehaviorTree\ParentNode.h" />
+    <ClInclude Include="BehaviorTree\SharedVariable.h" />
     <ClInclude Include="BehaviorTree\TaskStatus.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

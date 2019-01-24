@@ -10,6 +10,11 @@ public:
 	{
 	}
 
+	~ConditionalEvaluator() {
+		if (ConditionalNode != nullptr)
+			delete ConditionalNode;
+	}
+
 	void SetConditional(Conditional* conditional)
 	{
 		ConditionalNode = conditional;

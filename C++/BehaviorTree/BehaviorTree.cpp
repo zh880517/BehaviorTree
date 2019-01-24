@@ -13,11 +13,63 @@ BehaviorTree::BehaviorTree()
 
 BehaviorTree::~BehaviorTree()
 {
+	for (auto& node :Nodes)
+		delete node;
 }
 
 TaskStatus BehaviorTree::GetNodeRunStatus(int nodeId)
 {
-	return TaskStatus();
+	TaskStatus status = TaskStatus::Inactive;
+	if (nodeId >= 0 && nodeId < (int)NodeParentId.size())
+		status = NodeRunStatus[nodeId];
+	return status;
+}
+
+void BehaviorTree::Update()
+{
+	if (!CanUpdate)
+		return;
+	TaskStatus status = OnUpdate();
+	if (status != TaskStatus::Running)
+	{
+		//此时整棵树已经运行完成
+		CanUpdate = ReStartWhenComplete;
+	}
+}
+
+TaskStatus BehaviorTree::OnUpdate()
+{
+	if (RunningNode < 0)
+		return RunNode(Root);
+	Node* node = GetNode(RunningNode);
+	return RunNode(node);
+}
+
+int BehaviorTree::GetNodeParentId(int nodeId)
+{
+	int id = -1;
+	if (nodeId >= 0 && nodeId < (int)NodeParentId.size())
+		id = NodeParentId[nodeId];
+	return id;
+}
+
+Node * BehaviorTree::GetNode(int nodeId)
+{
+	if (nodeId >= 0 && nodeId < (int)Nodes.size())
+		return Nodes[nodeId];
+	return nullptr;
+}
+
+ParentNode * BehaviorTree::GetParent(int nodeId)
+{
+	int parentId = GetNodeParentId(nodeId);
+	if (parentId >= 0)
+	{
+		Node* parent = GetNode(parentId);
+		if (parent != nullptr)
+			return static_cast<ParentNode*>(parent);
+	}
+	return nullptr;
 }
 
 void BehaviorTree::SetRuningNode(int nodeId)
@@ -27,13 +79,15 @@ void BehaviorTree::SetRuningNode(int nodeId)
 
 void BehaviorTree::OnNodeStatusChange(Node * node, TaskStatus status)
 {
-	
+	NodeRunStatus[node->GetId()] = status;
+	if (status != TaskStatus::Running && node->GetId() == RunningNode)
+		RunningNode = -1;
 }
 
 TaskStatus BehaviorTree::RunNode(Node * node)
 {
 	TaskStatus oldStatus = GetNodeRunStatus(node->GetId());
-	if (oldStatus == TaskStatus::Inactive)
+	if (oldStatus != TaskStatus::Running)
 		node->OnAwake();
 	TaskStatus status = TaskStatus::Inactive;
 	if (node->GetType() <= NodeType::Conditional)
@@ -44,19 +98,30 @@ TaskStatus BehaviorTree::RunNode(Node * node)
 	{
 		status = RunParentNode(static_cast<ParentNode*>(node));
 	}
-	switch (node->GetType())
-	{
-	case NodeType::Action:
-	case NodeType::Conditional:
-		break;
-	case NodeType::Decorator:
-	case NodeType::Composite:
-	default:
-		break;
-	}
 	OnNodeStatusChange(node, status);
-	if (status != TaskStatus::Running)
-		node->OnEnd();
+	if (status == TaskStatus::Failure || status == TaskStatus::Success)
+		return OnNodeComplete(node, status);
+	return status;
+}
+
+TaskStatus BehaviorTree::OnNodeComplete(Node * node, TaskStatus status)
+{
+	node->OnEnd();
+	ParentNode* parentNode = GetParent(node->GetId());
+	if (parentNode != nullptr)
+	{
+		auto it = NodeInParentIndex.find(node->GetId());
+		if (it != NodeInParentIndex.end())
+		{
+			parentNode->OnChildExecuted(it->second, status);
+			status = parentNode->OverrideStatus(status);
+			if (status == TaskStatus::Running)
+				return TaskStatus::Running;
+			if (parentNode->CanExecute())
+				return RunNode(parentNode);
+			return OnNodeComplete(parentNode, status);
+		}
+	}
 	return status;
 }
 
@@ -71,20 +136,16 @@ TaskStatus BehaviorTree::RunChildNode(Node * node)
 TaskStatus BehaviorTree::RunParentNode(ParentNode * node)
 {
 	TaskStatus status = TaskStatus::Failure;
-	int lastIndex = -1;
-	while (node->CanExecute() && status != TaskStatus::Running)
+	if (node->CanExecute())
 	{
 		int index = node->CurrentChildIndex();
-		//装饰器每次获取到的索引都是0
-		if (index == lastIndex)
-			break;
-
 		Node* child = node->GetChild(index);
-		if (child == nullptr)
-			break;
-		status = RunNode(child);
-		node->OnChildExecuted(index, status);
+		if (child != nullptr)
+		{
+			NodeInParentIndex[node->GetId()] = index;
+			return RunNode(child);
+		}
 	}
-	return node->OverrideStatus(status);
+	return TaskStatus::Failure;
 }
 
