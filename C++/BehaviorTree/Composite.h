@@ -1,14 +1,18 @@
 #pragma once
 #include <vector>
 #include "ParentNode.h"
+#include "AbortType.h"
 
-class Composite : ParentNode
+class Composite : public ParentNode
 {
 public:
 	Composite(BehaviorTree* owner, int id) :
-		ParentNode(owner, NodeType::Action, id)
+		ParentNode(owner, NodeType::Composite, id)
 	{
 	}
+
+	AbortType GetAbortType()const { return Abort; }
+
 	virtual void OnAwake() override 
 	{
 		if (Children.size() != ChildrenStatus.size())
@@ -34,13 +38,13 @@ public:
 
 	virtual Node* GetChild(int childIndex) override
 	{
-		return childIndex >= 0 && childIndex < Children.size() ? Children[childIndex] : nullptr;
+		return childIndex >= 0 && childIndex <(int) Children.size() ? Children[childIndex] : nullptr;
 	}
 
 	virtual void OnChildExecuted(int childIndex, TaskStatus childStatus) override
 	{
 		++CurrentIndex;
-		if (childIndex >=0 && childIndex < ChildrenStatus.size())
+		if (childIndex >=0 && childIndex < (int)ChildrenStatus.size())
 		{
 			ChildrenStatus[childIndex] = childStatus;
 		}
@@ -49,12 +53,13 @@ public:
 	virtual void OnConditionalAbort(int childIndex)
 	{
 		CurrentIndex = childIndex;
-		for (int i = childIndex; i < ChildrenStatus.size(); ++i)
+		for (int i = childIndex; i < (int)ChildrenStatus.size(); ++i)
 			ChildrenStatus[i] = TaskStatus::Inactive;
 	}
 
 protected:
-	int CurrentIndex = 0;
 	std::vector<Node*> Children;
 	std::vector<TaskStatus> ChildrenStatus;
+	int CurrentIndex = 0;
+	AbortType Abort = AbortType::None;
 };

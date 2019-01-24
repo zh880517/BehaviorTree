@@ -5,7 +5,7 @@ class Conditional : public Node
 {
 public:
 	Conditional(BehaviorTree* owner, int id) :
-		Node(owner, NodeType::Action, id)
+		Node(owner, NodeType::Conditional, id)
 	{
 	}
 

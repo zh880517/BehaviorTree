@@ -15,6 +15,7 @@ public:
 
 public:
 	int GetId()const { return Id; }
+	NodeType GetType()const { return Type; }
 	BehaviorTree* GetOwner() { return Owner; }
 	virtual TaskStatus Update() = 0;
 	virtual void OnAwake() {};

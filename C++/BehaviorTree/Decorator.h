@@ -23,6 +23,11 @@ public:
 		return childIndex == 0 ? Child : nullptr;
 	}
 
+	virtual bool CanExecute()
+	{
+		return ChildStatus == TaskStatus::Inactive || ChildStatus == TaskStatus::Running;
+	}
+
 	virtual void OnChildExecuted(int childIndex, TaskStatus childStatus) override
 	{
 		ChildStatus = childStatus;

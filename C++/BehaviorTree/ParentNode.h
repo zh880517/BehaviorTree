@@ -15,6 +15,5 @@ public:
 	virtual bool CanExecute() = 0;
 	virtual int CurrentChildIndex() { return 0; }
 	virtual void OnChildExecuted(int childIndex, TaskStatus childStatus) {}
-
-
+	virtual TaskStatus OverrideStatus(TaskStatus status) { return status; }
 };
