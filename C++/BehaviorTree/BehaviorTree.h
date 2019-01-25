@@ -4,7 +4,11 @@
 #include <map>
 class Node;
 class ParentNode;
-
+struct ReevaluateNodeInfo
+{
+	int RootNode;
+	int RootChildIndex;
+};
 class BehaviorTree
 {
 public:
@@ -15,7 +19,11 @@ public:
 	TaskStatus GetNodeRunStatus(int nodeId);
 	void Update();
 protected:
+	void BuildTreeInfo();
+	void BuildChildInfo(Node* node);
 	TaskStatus OnUpdate();
+	TaskStatus ReevaluateNode();
+	void AbortByChild(ParentNode* parent, int childIndex);
 	int GetNodeParentId(int nodeId);
 	Node* GetNode(int nodeId);
 	ParentNode* GetParent(int nodeId);
@@ -25,17 +33,13 @@ protected:
 	TaskStatus OnNodeComplete(Node* node, TaskStatus status);
 	TaskStatus RunChildNode(Node* node);
 	TaskStatus RunParentNode(ParentNode* node);
-	/*
-	TaskStatus RunConditionalDecorator(ConditionalDecorator* node);
-	TaskStatus RunDecorator(Decorator* node);
-	TaskStatus RunComposite(Composite* node);
-	*/
-
 private:
 	std::vector<TaskStatus> NodeRunStatus;
 	std::vector<int> NodeParentId;
 	std::vector<Node*> Nodes;
-	std::map<int, int> NodeInParentIndex;
+	std::vector<int> NodeInParentIndex;
+	std::map<int, ReevaluateNodeInfo> ReevaluateNodeParent;
+	std::vector<int> WaiteReevaluateNode;
 	Node* Root = nullptr;
 	int RunningNode = -1;
 	bool ReStartWhenComplete = false;

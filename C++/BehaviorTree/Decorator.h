@@ -13,9 +13,9 @@ public:
 		Child = node;
 	}
 
-	virtual bool HasChildren() const override
+	virtual int ChildrenCount() const override
 	{
-		return Child != nullptr;
+		return Child != nullptr ? 1 : 0;
 	}
 
 	virtual Node* GetChild(int childIndex) override
@@ -31,6 +31,10 @@ public:
 	virtual void OnChildExecuted(int childIndex, TaskStatus childStatus) override
 	{
 		ChildStatus = childStatus;
+	}
+	virtual void OnConditionalAbort(int childIndex) override
+	{
+		ChildStatus = TaskStatus::Inactive;
 	}
 
 	virtual void OnEnd() override

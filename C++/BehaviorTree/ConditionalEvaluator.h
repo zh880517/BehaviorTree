@@ -20,11 +20,11 @@ public:
 		ConditionalNode = conditional;
 	}
 
-	virtual void OnAwake()
+	virtual void OnStart()
 	{
 		if (ConditionalNode != nullptr)
 		{
-			ConditionalNode->OnAwake();
+			ConditionalNode->OnStart();
 		}
 	}
 

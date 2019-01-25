@@ -13,7 +13,7 @@ public:
 
 	AbortType GetAbortType()const { return Abort; }
 
-	virtual void OnAwake() override 
+	virtual void OnStart() override 
 	{
 		if (Children.size() != ChildrenStatus.size())
 			ChildrenStatus.resize(Children.size(), TaskStatus::Inactive);
@@ -31,11 +31,6 @@ public:
 		Children.push_back(node);
 	}
 
-	virtual bool HasChildren() const override
-	{
-		return !Children.empty();
-	}
-
 	virtual Node* GetChild(int childIndex) override
 	{
 		return childIndex >= 0 && childIndex <(int) Children.size() ? Children[childIndex] : nullptr;
@@ -50,11 +45,20 @@ public:
 		}
 	}
 
-	virtual void OnConditionalAbort(int childIndex)
+	virtual void OnConditionalAbort(int childIndex) override
 	{
 		CurrentIndex = childIndex;
 		for (int i = childIndex; i < (int)ChildrenStatus.size(); ++i)
 			ChildrenStatus[i] = TaskStatus::Inactive;
+	}
+	virtual int CurrentChildIndex() override
+	{
+		return CurrentIndex;
+	}
+
+	virtual int ChildrenCount() const override
+	{
+		return (int)Children.size();
 	}
 
 protected:

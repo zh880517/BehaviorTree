@@ -18,7 +18,8 @@ public:
 	NodeType GetType()const { return Type; }
 	BehaviorTree* GetOwner() { return Owner; }
 	virtual TaskStatus Update() = 0;
-	virtual void OnAwake() {};
+	virtual void OnInit() {}//只调用一次
+	virtual void OnStart() {};
 	virtual void OnEnd() {};
 
 private:

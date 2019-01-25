@@ -8,6 +8,5 @@ public:
 	{
 	}
 
-	//virtual TaskStatus Update() override { return TaskStatus::Success; }
 };
 
