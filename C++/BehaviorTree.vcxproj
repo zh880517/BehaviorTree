@@ -149,7 +149,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BehaviorTree\BehaviorTree.cpp" />
-    <ClCompile Include="BehaviorTree\Blackboard.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +165,7 @@
     <ClInclude Include="BehaviorTree\ParentNode.h" />
     <ClInclude Include="BehaviorTree\SharedVariable.h" />
     <ClInclude Include="BehaviorTree\TaskStatus.h" />
+    <ClInclude Include="BehaviorTree\Variable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

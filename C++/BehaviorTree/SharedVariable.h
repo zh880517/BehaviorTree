@@ -1,26 +1,30 @@
 #pragma once
-#include <map>
-template< class T>
+#include "Variable.h"
+template<class T>
 class SharedVariable
 {
 public:
-	typedef typename std::map<std::string, T>::iterator Value;
-	SharedVariable() = default;
-	SharedVariable(const SharedVariable<T>&) = default;
-	SharedVariable(SharedVariable<T>&&) = default;
-	SharedVariable(const Value& it) :It(it) {}
+	SharedVariable(TVariable<T>* val) :Ptr(val){}
+
+	void Set(TVariable<T>* val) { Ptr = val; }
+
 	T& operator=(const T& c)
 	{
-		It->second = c;
-		return It->second;
+		if (Ptr == nullptr)
+		{
+			Value = c;
+			return Value;
+		}
+		Ptr->Value = c;
+		return Ptr->Value;
 	}
-
 	const T& operator()()const
 	{
-		return It->second;
+		if (Ptr == nullptr)
+			return Value;
+		return Ptr->Value;
 	}
-
-private:
-	Value It;
+protected:
+	T Value;
+	TVariable<T>* Ptr;
 };
-
